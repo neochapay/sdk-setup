@@ -209,7 +209,11 @@ prepare_etc() {
     # Symlink to parentroot to support dynamic resolv.conf on host
     rm -f ${sdkroot}/etc/resolv.conf
     resolv=$(readlink -fn /etc/resolv.conf) # some systems use symlinks to /var/run/...
-    ln -s /parentroot/$resolv ${sdkroot}/etc/resolv.conf
+    if [[ $bind_mount_root == "yes" ]] ; then
+        ln -sf /parentroot/$resolv ${sdkroot}/etc/resolv.conf
+    else
+        cp $resolv ${sdkroot}/etc/resolv.conf
+    fi
 
     # Fixup old SDKs with broken /etc/mtab since this won't be fixed
     # by any package updates
