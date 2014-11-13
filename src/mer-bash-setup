@@ -2,6 +2,9 @@
 export MERSDK=1
 [[ -e /etc/profile ]] && . /etc/profile
 
+# Many distributions automatically include this in PS1 when set
+: ${debian_chroot:=MerSDK}
+
 if [[ -e ~/.bash_profile ]] ; then
    . ~/.bash_profile
 elif [[ -e ~/.bash_login ]] ; then
