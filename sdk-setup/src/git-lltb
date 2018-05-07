@@ -38,7 +38,7 @@ SELF=$(basename "$0")
 synopsis()
 {
     cat <<EOF
-usage: $SELF patch-view [--tool TOOL] BRANCH UPSTREAM
+usage: $SELF patch-view [--tool TOOL] BRANCH UPSTREAM [REV-LIST-ARG...]
 EOF
 }
 
@@ -125,13 +125,13 @@ main_patch-view()
         shift
     done
 
-    if [[ ${#positional_args[@]} -ne 2 ]]; then
+    if [[ ${#positional_args[@]} -lt 2 ]]; then
         echo "Requires exactly two positional arguments"
         brief_usage >&2
         return 1
     fi
 
-    local branch=${positional_args[0]} upstream=${positional_args[1]}
+    local branch=${positional_args[0]} upstream=${positional_args[1]} other=("${positional_args[@]:2}")
 
     branch=$(git rev-parse "$branch") || return
     upstream=$(git rev-parse "$upstream") || return
@@ -154,7 +154,7 @@ main_patch-view()
     touch .hack
 
     local commits=
-    commits=($(git rev-list --reverse "$upstream..$branch")) || return
+    commits=($(set -x; git rev-list --reverse "$upstream..$branch" "${other[@]}")) || return
     local tagged=
     for commit in "${commits[@]}"; do
         progress
